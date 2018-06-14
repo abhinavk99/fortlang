@@ -22,10 +22,10 @@ Currently, the language is just a CLI interpreter that supports `integer OP inte
 the operations are adding, subtracting, multiplying, and dividing.
 
 ## Syntax
-add is `join`
-subtract is `leave`
-multiply is `group`
-divide is `split`
+* add is `join`
+* subtract is `leave`
+* multiply is `group`
+* divide is `split`
 
 ## Todo
 I plan on adding the features to make Fortlang an actual language instead of just a simple calculator.
