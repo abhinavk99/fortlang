@@ -84,33 +84,34 @@ class Interpreter(object):
 
         self.throw_error()
 
-    def validate_token(self, token_type):
-        # check if token type matches type, get next token if it matches
-        if self.curr_token.type == token_type:
-            self.curr_token = self.get_next_token()
-        else:
-            self.throw_error()
-
     def parse_expression(self):
         # set current token to the first token in input
         self.curr_token = self.get_next_token()
 
         # current token should be an integer
-        left = self.curr_token
+        res = self.curr_token.value
         self.validate_token(Tokenization.INTEGER)
 
-        # current token should be an operation
-        op = self.curr_token
-        self.validate_token(op.type)
+        if self.curr_token.type in (Tokenization.ADD, Tokenization.SUBTRACT):
+            return self.parse_arithmetic(res, Tokenization.ADD, Tokenization.SUBTRACT)
+        else:
+            return self.parse_arithmetic(res, Tokenization.MULTIPLY, Tokenization.DIVIDE)
 
-        # current token should be a one digit integer
-        right = self.curr_token
-        self.validate_token(Tokenization.INTEGER)
-        # self.curr_token has been set to Tokenization.EOF above
-
-        # evaluate the expression and return the result
-        res = self.evaluate_expression(left, op, right)
         return res
+
+    def parse_arithmetic(self, res, op_1, op_2):
+        while self.curr_token.type in (op_1, op_2):
+            op = self.curr_token
+            self.validate_token(op_1, op_2)
+            term = self.curr_token.value
+            self.validate_token(Tokenization.INTEGER)
+            res = self.evaluate_expression(res, op, term)
+        return res
+
+    def validate_token(self, *token_types):
+        if self.curr_token.type not in token_types:
+            self.throw_error()
+        self.curr_token = self.get_next_token()
 
     def is_add_op_token(self, start, end, token):
         return end.isspace() and start == 'j' and token == Tokenization.ADD.value
@@ -135,13 +136,13 @@ class Interpreter(object):
     def evaluate_expression(self, left, op, right):
         """Evaluate expression based on operation"""
         if op.type == Tokenization.ADD:
-            return left.value + right.value
+            return left + right
         elif op.type == Tokenization.SUBTRACT:
-            return left.value - right.value
+            return left - right
         elif op.type == Tokenization.MULTIPLY:
-            return left.value * right.value
+            return left * right
         else:
-            return left.value / right.value
+            return left / right
 
 
 def main():
